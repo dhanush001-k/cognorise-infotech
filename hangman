@@ -1,0 +1,102 @@
+import java.util.*;
+
+public class Main {
+    private static final String[] WORDS = {
+        "java", "programming", "hangman", "computer", "developer", "keyboard", "monitor", "mouse", "code", "software"
+    };
+    private static final int MAX_ATTEMPTS = 6;
+    private String chosenWord;
+    private char[] guessedWord;
+    private Set<Character> guessedLetters;
+    private int attemptsLeft;
+
+    public Main() {
+        Random random = new Random();
+        chosenWord = WORDS[random.nextInt(WORDS.length)];
+        guessedWord = new char[chosenWord.length()];
+        Arrays.fill(guessedWord, '_');
+        guessedLetters = new HashSet<>();
+        attemptsLeft = MAX_ATTEMPTS;
+    }
+
+    public void play() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (attemptsLeft > 0 && !isWordGuessed()) {
+            System.out.println("\nWord: " + String.valueOf(guessedWord));
+            System.out.println("Attempts left: " + attemptsLeft);
+            System.out.println("Guessed letters: " + guessedLetters);
+            System.out.print("Guess a letter: ");
+            char guess = scanner.next().toLowerCase().charAt(0);
+
+            if (guessedLetters.contains(guess)) {
+                System.out.println("You've already guessed that letter. Try again.");
+                continue;
+            }
+
+            guessedLetters.add(guess);
+
+            if (chosenWord.indexOf(guess) >= 0) {
+                updateGuessedWord(guess);
+            } else {
+                attemptsLeft--;
+                drawHangman();
+            }
+        }
+
+        if (isWordGuessed()) {
+            System.out.println("\nCongratulations! You've guessed the word: " + chosenWord);
+        } else {
+            System.out.println("\nGame over! The word was: " + chosenWord);
+        }
+
+        scanner.close();
+    }
+
+    private void updateGuessedWord(char guess) {
+        for (int i = 0; i < chosenWord.length(); i++) {
+            if (chosenWord.charAt(i) == guess) {
+                guessedWord[i] = guess;
+            }
+        }
+    }
+
+    private boolean isWordGuessed() {
+        return chosenWord.equals(String.valueOf(guessedWord));
+    }
+
+    private void drawHangman() {
+        switch (attemptsLeft) {
+            case 5:
+                System.out.println("\n  O  ");
+                break;
+            case 4:
+                System.out.println("\n  O  ");
+                System.out.println("  |  ");
+                break;
+            case 3:
+                System.out.println("\n  O  ");
+                System.out.println(" \\|  ");
+                break;
+            case 2:
+                System.out.println("\n  O  ");
+                System.out.println(" \\|/ ");
+                break;
+            case 1:
+                System.out.println("\n  O  ");
+                System.out.println(" \\|/ ");
+                System.out.println(" /   ");
+                break;
+            case 0:
+                System.out.println("\n  O  ");
+                System.out.println(" \\|/ ");
+                System.out.println(" / \\ ");
+                break;
+        }
+    }
+
+    public static void main(String[] args) {
+        Main game = new Main();
+        game.play();
+    }
+}
